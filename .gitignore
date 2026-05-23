@@ -1,0 +1,17 @@
+# Secrets and cluster access
+.env
+deploy/.env
+*.kubeconfig.yaml
+*-kubeconfig.yaml
+output/
+.kube/
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+
+# Generated manifests
+deploy/generated/
+**/.DS_Store
+tests/**/*.json

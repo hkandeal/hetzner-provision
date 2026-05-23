@@ -1,0 +1,11 @@
+kc getapiVersion: configuration.konghq.com/v1
+kind: KongPlugin
+metadata:
+  name: jwks-oauth-plugin
+config:
+  discovery: "https://dev-73532062.okta.com/oauth2/default/.well-known/oauth-authorization-server"
+  enable_scope_validation: true
+  authorization_scope_claim_name: scp
+  scopes:
+  - admin.all
+plugin: jwks-oauth-plugin

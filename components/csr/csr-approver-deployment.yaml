@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: csr-auto-approver
+  namespace: kube-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: csr-auto-approver
+  template:
+    metadata:
+      labels:
+        app: csr-auto-approver
+    spec:
+      serviceAccountName: csr-approver
+      containers:
+      - name: approver
+        image: bitnami/kubectl:latest
+        command:
+        - /bin/sh
+        - -c
+        - |
+          while true; do
+            kubectl get csr --no-headers | grep Pending | awk '{print $1}' | while read csr; do
+              echo "Approving $csr"
+              kubectl certificate approve "$csr"
+            done
+            sleep 120
+          done

@@ -1,0 +1,28 @@
+# Platform add-on profile (clustzilla-style stack).
+# Installed by deploy/scripts/03-platform.sh in this order.
+profile: full-platform
+description: Flannel, Hetzner CCM/CSI, metrics, CSR approver, cert-manager, Kong, observability, Argo CD, Netdata
+
+addons:
+  - id: cni
+    name: Flannel
+  - id: ccm
+    name: Hetzner CCM
+  - id: csi
+    name: Hetzner CSI
+  - id: metrics-server
+    name: metrics-server
+  - id: csr-approver
+    name: kubelet CSR approver
+  - id: cert-manager
+    name: cert-manager
+  - id: kong
+    name: Kong ingress
+  - id: prometheus
+    name: kube-prometheus-stack
+  - id: loki
+    name: Loki
+  - id: argocd
+    name: Argo CD
+  - id: netdata
+    name: Netdata

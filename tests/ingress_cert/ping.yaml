@@ -1,0 +1,295 @@
+# Usage:
+# go run internal/cmd/main.go
+# kubectl apply -f examples/ping.yaml
+# kubectl get secrets kong-config -o=go-template='{{index .data "networking.k8s.io-v1-Ingress-default-ping-ingress" }}' | base64 -d
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ping-page
+data:
+  healthz.conf: |
+    server {
+      listen 80;
+      location /healthz {
+        access_log off;
+        return 200 "OK\n";
+        add_header Content-Type text/plain;
+      }
+      location / {
+        root /usr/share/nginx/html;
+        index index.html;
+      }
+    }
+  index.html: |
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>ping.hossam.io</title>
+      <link rel="preconnect" href="https://fonts.googleapis.com" />
+      <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Syne:wght@400;700&display=swap" rel="stylesheet" />
+      <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+          font-family: 'Syne', sans-serif;
+          background: #0a0d12;
+          color: #e8ecf2;
+          min-height: 100vh;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 40px 20px;
+        }
+        .card {
+          width: 100%;
+          max-width: 560px;
+          background: #0f1318;
+          border: 1px solid rgba(255,255,255,0.07);
+          border-radius: 16px;
+          padding: 40px 36px;
+          position: relative;
+          overflow: hidden;
+        }
+        .card::before {
+          content: '';
+          position: absolute;
+          top: -120px; right: -80px;
+          width: 360px; height: 360px;
+          background: radial-gradient(circle, rgba(52,211,153,0.08) 0%, transparent 70%);
+          pointer-events: none;
+        }
+        .card::after {
+          content: '';
+          position: absolute;
+          bottom: -100px; left: -60px;
+          width: 280px; height: 280px;
+          background: radial-gradient(circle, rgba(99,102,241,0.07) 0%, transparent 70%);
+          pointer-events: none;
+        }
+        .top-bar {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 40px;
+        }
+        .logo {
+          font-family: 'JetBrains Mono', monospace;
+          font-size: 12px;
+          color: #34d399;
+          letter-spacing: 0.12em;
+        }
+        .status-pill {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          background: rgba(52,211,153,0.1);
+          border: 1px solid rgba(52,211,153,0.25);
+          border-radius: 20px;
+          padding: 4px 12px;
+          font-family: 'JetBrains Mono', monospace;
+          font-size: 11px;
+          color: #34d399;
+        }
+        .pulse {
+          width: 6px; height: 6px;
+          background: #34d399;
+          border-radius: 50%;
+          animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+          0%,100% { opacity:1; transform:scale(1); }
+          50%      { opacity:0.4; transform:scale(0.8); }
+        }
+        .domain {
+          font-size: clamp(28px, 5vw, 38px);
+          font-weight: 700;
+          letter-spacing: -0.02em;
+          margin-bottom: 6px;
+        }
+        .domain span { color: #34d399; }
+        .subtitle {
+          font-family: 'JetBrains Mono', monospace;
+          font-size: 12px;
+          color: #6b7a96;
+          margin-bottom: 36px;
+        }
+        .metrics {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 10px;
+          margin-bottom: 20px;
+        }
+        .metric {
+          background: rgba(255,255,255,0.04);
+          border: 1px solid rgba(255,255,255,0.07);
+          border-radius: 10px;
+          padding: 14px;
+        }
+        .metric-label {
+          font-family: 'JetBrains Mono', monospace;
+          font-size: 9px;
+          color: #6b7a96;
+          text-transform: uppercase;
+          letter-spacing: 0.12em;
+          margin-bottom: 8px;
+        }
+        .metric-value {
+          font-family: 'JetBrains Mono', monospace;
+          font-size: 18px;
+          font-weight: 600;
+        }
+        .green  { color: #34d399; }
+        .blue   { color: #818cf8; }
+        .amber  { color: #fbbf24; }
+        .info-row {
+          display: flex;
+          gap: 10px;
+        }
+        .info-box {
+          flex: 1;
+          background: rgba(255,255,255,0.03);
+          border: 1px solid rgba(255,255,255,0.06);
+          border-radius: 10px;
+          padding: 12px 14px;
+        }
+        .info-box-label {
+          font-family: 'JetBrains Mono', monospace;
+          font-size: 9px;
+          color: #6b7a96;
+          text-transform: uppercase;
+          letter-spacing: 0.1em;
+          margin-bottom: 5px;
+        }
+        .info-box-val {
+          font-family: 'JetBrains Mono', monospace;
+          font-size: 12px;
+          color: #c8d0df;
+        }
+        .footer {
+          font-family: 'JetBrains Mono', monospace;
+          font-size: 9px;
+          color: #3a4458;
+          margin-top: 28px;
+          text-align: center;
+          letter-spacing: 0.06em;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="card">
+        <div class="top-bar">
+          <div class="logo">cluster://clustzilla</div>
+          <div class="status-pill"><div class="pulse"></div> operational</div>
+        </div>
+        <div class="domain">ping<span>.hossam.io</span></div>
+        <div class="subtitle">$ curl -sk https://ping.hossam.io/healthz → 200 OK</div>
+        <div class="metrics">
+          <div class="metric">
+            <div class="metric-label">status</div>
+            <div class="metric-value green">● live</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">ingress</div>
+            <div class="metric-value blue">kong</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">tls</div>
+            <div class="metric-value amber">✓ valid</div>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-box">
+            <div class="info-box-label">cluster</div>
+            <div class="info-box-val">clustzilla</div>
+          </div>
+          <div class="info-box">
+            <div class="info-box-label">issuer</div>
+            <div class="info-box-val">letsencrypt-prod</div>
+          </div>
+          <div class="info-box">
+            <div class="info-box-label">namespace</div>
+            <div class="info-box-val">default</div>
+          </div>
+        </div>
+        <div class="footer">nginx:alpine · ping.hossam.io ping page</div>
+      </div>
+    </body>
+    </html>
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ping-deployment
+  labels:
+    app: ping
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ping
+  template:
+    metadata:
+      labels:
+        app: ping
+    spec:
+      containers:
+      - name: ping-page
+        image: nginx:alpine
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: ping-html
+          mountPath: /usr/share/nginx/html
+        - name: ping-nginx-conf
+          mountPath: /etc/nginx/conf.d/default.conf
+          subPath: healthz.conf
+      volumes:
+      - name: ping-html
+        configMap:
+          name: ping-page
+      - name: ping-nginx-conf
+        configMap:
+          name: ping-page
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: ping
+  name: ping-deployment
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: ping
+  type: ClusterIP
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ping-ingress
+  annotations:
+    konghq.com/strip-path: 'false'
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    # acme.cert-manager.io/http01-edit-in-place: 'true'
+spec:
+  ingressClassName: kong
+  tls:
+  - hosts:
+    - ping.hossam.io
+    secretName: ingress-ping-secret
+  rules:
+  - host: ping.hossam.io
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: ping-deployment
+            port:
+              number: 80

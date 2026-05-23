@@ -1,0 +1,18 @@
+apiVersion: configuration.konghq.com/v1
+kind: KongClusterPlugin
+metadata:
+  name: gateway-correlation-id
+  annotations:
+    kubernetes.io/ingress.class: kong
+  labels:
+    global: "true"
+config:
+  header_name: hetzner-Trace-ID
+  generator: uuid #tracker #uuid#counter
+  echo_downstream: true
+plugin: correlation-id
+
+#kubectl annotate service registration-service konghq.com/plugins=gateway-correlation-id -n=apis-services
+#kubectl annotate ingress registration-service-ingress konghq.com/plugins=gateway-correlation-id -n=apis-servicesd
+
+#kubectl patch svc registration-service --type=json -p='[{"op": "remove", "path": "/metadata/annotations/konghq.com/plugins: gateway-correlation-id"}]' 
