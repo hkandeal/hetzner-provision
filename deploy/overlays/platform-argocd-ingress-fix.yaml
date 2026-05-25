@@ -1,0 +1,8 @@
+# Patch for live clusters that drifted to server.insecure=false.
+# Source of truth: components/argocd/values.yaml (configs.cm + configs.params).
+# helm upgrade argocd argo/argo-cd -n argocd --reuse-values -f deploy/overlays/platform-argocd-ingress-fix.yaml
+configs:
+  cm:
+    server.insecure: true
+  params:
+    server.insecure: true

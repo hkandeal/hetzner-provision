@@ -200,6 +200,7 @@ configs:
     # -- Timeout to refresh application data as well as target manifests cache
     timeout.hard.reconciliation: 0s
 
+    # Required for Kong ingress: TLS terminates at Kong; server must accept HTTP (avoids 307 redirect loop).
     server.insecure: true
 
     # -- Enable Status Badge
@@ -407,7 +408,7 @@ configs:
     controller.sync.timeout.seconds: 0
 
     ## Server properties
-    # -- Run server without TLS
+    # -- Run server without TLS (required when TLS terminates at Kong; must match configs.cm.server.insecure).
     ## NOTE: This value should be set when you generate params by other means as it changes ports used by ingress template.
     server.insecure: true
     # -- Value for base href in index.html. Used if Argo CD is running behind reverse proxy under subpath different from /
@@ -2400,6 +2401,7 @@ server:
     labels: {}
     # -- Additional ingress annotations
     ## Ref: https://argo-cd.readthedocs.io/en/stable/operator-manual/ingress/#option-1-ssl-passthrough
+    ## Requires configs.cm.server.insecure and configs.params.server.insecure = true (HTTP backend).
     annotations:
       cert-manager.io/cluster-issuer: "letsencrypt-prod" # If using cert-manager
       konghq.com/strip-path: 'true'

@@ -99,7 +99,7 @@ Upgrade:
 helm upgrade argocd argo/argo-cd -n argocd -f components/argocd/values.yaml
 ```
 
-Behind ingress / TLS: set `server.insecure: "true"` in `argocd-cmd-params-cm` if terminating TLS at Kong, then `kubectl rollout restart deploy/argocd-server -n argocd`. See [Argo CD ingress docs](https://argo-cd.readthedocs.io/en/stable/operator-manual/ingress/).
+**Kong ingress:** TLS terminates at Kong; Argo must accept HTTP on the pod. Keep `configs.cm.server.insecure: true` and `configs.params.server.insecure: true` in [`components/argocd/values.yaml`](components/argocd/values.yaml) (or apply [`deploy/overlays/platform-argocd-ingress-fix.yaml`](deploy/overlays/platform-argocd-ingress-fix.yaml)). If the UI loops on redirect, check `argocd-cmd-params-cm` and restart the server. See [Argo CD ingress docs](https://argo-cd.readthedocs.io/en/stable/operator-manual/ingress/).
 
 ---
 
