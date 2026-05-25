@@ -122,13 +122,13 @@ parent:
   hostname: "netdata-parent"
   enabled: true
   port: 19999
-  resources: {}
-    # limits:
-    #  cpu: 4
-    #  memory: 4096Mi
-    # requests:
-    #  cpu: 4
-    #  memory: 4096Mi
+  resources:
+    requests:
+      cpu: 100m
+      memory: 192Mi
+    limits:
+      cpu: 500m
+      memory: 1Gi
 
   livenessProbe:
     initialDelaySeconds: 0
@@ -263,13 +263,13 @@ child:
     # rollingUpdate:
     #   maxUnavailable: 1
 
-  resources: {}
-    # limits:
-    #  cpu: 4
-    #  memory: 4096Mi
-    # requests:
-    #  cpu: 4
-    #  memory: 4096Mi
+  resources:
+    requests:
+      cpu: 50m
+      memory: 32Mi
+    limits:
+      cpu: 400m
+      memory: 512Mi
 
   livenessProbe:
     initialDelaySeconds: 0
@@ -409,13 +409,13 @@ k8sState:
   enabled: true
   port: "{{ .Values.parent.port }}"
 
-  resources: {}
-    # limits:
-    #  cpu: 4
-    #  memory: 4096Mi
-    # requests:
-    #  cpu: 4
-    #  memory: 4096Mi
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      cpu: 300m
+      memory: 256Mi
 
   livenessProbe:
     initialDelaySeconds: 0

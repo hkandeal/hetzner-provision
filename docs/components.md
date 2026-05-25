@@ -23,6 +23,60 @@ Re-run a single step manually using the same chart and `-f` path as in `03-platf
 
 ---
 
+## Resource sizing
+
+CPU and memory **requests** and **limits** are set in Helm values for platform control-plane addons (sized for a typical **3× cpx32 worker** cluster). Tune after observing usage with `kubectl top pods`.
+
+| Component | Values file | Workloads |
+|-----------|-------------|-----------|
+| cert-manager | `components/cert-manager/values.yaml` | controller, webhook, cainjector, startupapicheck |
+| Kong | `components/ingress/kong/values.yaml` | proxy, ingress-controller, migrations job |
+| Argo CD | `components/argocd/values.yaml` | application-controller (192Mi req), repo-server (64Mi), applicationset (48Mi), server, redis, dex, notifications |
+| Netdata | `components/observability/netdata/values.yaml` | parent (192Mi req, 1Gi limit), child (DaemonSet), k8s-state; `sd.child` sidecar already sized |
+| Loki | `components/observability/logging/loki/values_loki.yaml` | single-binary, results-cache, canary (`allocatedMemory` drives cache sizing) |
+
+Apply or refresh resources on a **running** workload cluster:
+
+```bash
+source deploy/scripts/lib.sh
+load_env
+use_workload_kubeconfig
+
+helm repo update jetstack kong argo netdata
+
+helm upgrade cert-manager jetstack/cert-manager \
+  -n cert-manager -f components/cert-manager/values.yaml
+
+helm upgrade kong kong/kong \
+  -n kong -f components/ingress/kong/values.yaml
+
+helm upgrade argocd argo/argo-cd \
+  -n argocd -f components/argocd/values.yaml
+
+helm upgrade netdata netdata/netdata \
+  -n netdata -f components/observability/netdata/values.yaml
+```
+
+Verify rollouts and resources:
+
+```bash
+kubectl rollout status deployment/cert-manager -n cert-manager --timeout=180s
+kubectl rollout status deployment/kong-kong -n kong --timeout=180s
+kubectl rollout status statefulset/argocd-application-controller -n argocd --timeout=300s
+
+kubectl get pods -n cert-manager -o custom-columns=NAME:.metadata.name,CPU_REQ:.spec.containers[0].resources.requests.cpu,MEM_REQ:.spec.containers[0].resources.requests.memory
+kubectl top pods -n cert-manager 2>/dev/null || true
+kubectl top pods -n kong 2>/dev/null || true
+kubectl top pods -n argocd 2>/dev/null || true
+kubectl top pods -n netdata 2>/dev/null || true
+```
+
+On a live cluster, prefer **pinned chart version** and **`--reuse-values`** with a resource-only overlay (see `deploy/overlays/platform-resources-*.yaml`) so other settings are not reset.
+
+If pods stay `Pending`, check `kubectl describe pod` for insufficient CPU/memory on nodes and lower requests or add workers.
+
+---
+
 ## Post-install: Argo CD
 
 PVCs (optional, before or after first install if not in values):

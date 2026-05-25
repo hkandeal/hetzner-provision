@@ -1,0 +1,28 @@
+# Resource-only overlay — helm upgrade loki ... --reuse-values -f deploy/overlays/platform-resources-loki.yaml
+singleBinary:
+  resources:
+    requests:
+      cpu: 100m
+      memory: 512Mi
+    limits:
+      cpu: 500m
+      memory: 768Mi
+
+resultsCache:
+  allocatedMemory: 256
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 384Mi
+
+lokiCanary:
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 100m
+      memory: 128Mi

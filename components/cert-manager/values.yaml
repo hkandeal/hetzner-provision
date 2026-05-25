@@ -320,7 +320,13 @@ extraEnv: []
 #    memory: 32Mi
 #
 # For more information, see [Resource Management for Pods and Containers](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/).
-resources: {}
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
 
 # Pod Security Context.
 # For more information, see [Configure a Security Context for a Pod or Container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/).
@@ -796,7 +802,13 @@ webhook:
   #    memory: 32Mi
   #
   # For more information, see [Resource Management for Pods and Containers](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/).
-  resources: {}
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 128Mi
 
   # Liveness probe values.
   # For more information, see [Container probes](https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#container-probes).
@@ -1133,7 +1145,13 @@ cainjector:
   #    memory: 32Mi
   #
   # For more information, see [Resource Management for Pods and Containers](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/).
-  resources: {}
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
 
   # The nodeSelector on Pods tells Kubernetes to schedule Pods on the nodes with
   # matching labels.
@@ -1332,7 +1350,7 @@ startupapicheck:
   #    value: 'some value'
   extraEnv: []
 
-  # Resources to provide to the cert-manager controller pod.
+  # Resources to provide to the cert-manager startupapicheck job pod.
   #
   # For example:
   #  requests:
@@ -1340,7 +1358,13 @@ startupapicheck:
   #    memory: 32Mi
   #
   # For more information, see [Resource Management for Pods and Containers](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/).
-  resources: {}
+  resources:
+    requests:
+      cpu: 10m
+      memory: 32Mi
+    limits:
+      cpu: 100m
+      memory: 64Mi
 
   # The nodeSelector on Pods tells Kubernetes to schedule Pods on the nodes with
   # matching labels.

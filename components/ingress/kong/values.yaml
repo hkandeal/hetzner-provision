@@ -491,15 +491,13 @@ migrations:
   backoffLimit: # Optionally set to specify the time-to-live (TTL) for a pod after it has completed its execution before automatic deletion. If left unset, pod lifetime is indefinite.
 
   ttlSecondsAfterFinished:
-  resources: {}
-  # Example reasonable setting for "resources":
-  # resources:
-  #   limits:
-  #     cpu: 100m
-  #     memory: 256Mi
-  #   requests:
-  #     cpu: 50m
-  #     memory: 128Mi
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
   ## Optionally specify any extra sidecar containers to be included in the deployment
   ## See https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.18/#container-v1-core
   ## Keep in mind these containers should be terminated along with the main
@@ -698,15 +696,13 @@ ingressController:
     periodSeconds: 10
     successThreshold: 1
     failureThreshold: 3
-  resources: {}
-  # Example reasonable setting for "resources":
-  # resources:
-  #   limits:
-  #     cpu: 100m
-  #     memory: 256Mi
-  #   requests:
-  #     cpu: 50m
-  #     memory: 128Mi
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 256Mi
 
   konnect:
     enabled: false
@@ -895,15 +891,14 @@ updateStrategy: {}
   #   maxSurge: "100%"
   #   maxUnavailable: "0%"
 
-# If you want to specify resources, uncomment the following
-# lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-resources: {}
-  # limits:
-  #  cpu: 1
-  #  memory: 2G
-  # requests:
-  #  cpu: 1
-  #  memory: 2G
+# Proxy (data plane) CPU and memory.
+resources:
+  requests:
+    cpu: 250m
+    memory: 512Mi
+  limits:
+    cpu: 1000m
+    memory: 1Gi
 
 # readinessProbe for Kong pods
 readinessProbe:
